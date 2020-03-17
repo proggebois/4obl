@@ -36,7 +36,7 @@ class Lenkeliste<T> implements Liste<T>{
 
     public T fjern(){
         if (stoerrelse == 0){
-            throw new UgyldigListeIndeks(-9);
+            throw new UgyldigListeIndeks(-1);
         }
         T retur = start.hentData();
         start = start.hentNeste();
@@ -122,7 +122,9 @@ class Lenkeliste<T> implements Liste<T>{
 
     }
 
-    class Node{
+
+
+    class Node  {
         protected T data;
         protected Node neste;
 
@@ -149,4 +151,5 @@ class Lenkeliste<T> implements Liste<T>{
             data = nyData;
         }
     }
+
 }
