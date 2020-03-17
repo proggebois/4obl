@@ -11,7 +11,7 @@ pasientens resepter. Det skal både være mulig å legge til nye resepter og hen
 reseptlisten.
 
 
-  # # # ANDREAS # # #
+  # # # ANDREAS # # # // Jeg tror denne er ferdig, men er noen av stedene jeg ikke vet enda om det burde endres til pasientpeker
 B2: Endre klassene som tar inn en int pasientid til å ta inn en Pasient pasient.
 
 
