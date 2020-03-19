@@ -1,8 +1,8 @@
 abstract class Legemiddel{
-    protected static int teller = 0; //Gir ID til nye instanser
+    protected static int legemiddelIdTeller = 0; //Gir ID til nye instanser
 
     protected String navn;
-    protected int id;
+    protected int unikLegemiddelId;
     protected double pris;
     protected double virkestoff;
 
@@ -11,8 +11,8 @@ abstract class Legemiddel{
         this.pris = pris;
         this.virkestoff = virkestoff;
 
-        id = teller;
-        teller++;
+        unikLegemiddelId = legemiddelIdTeller;
+        legemiddelIdTeller++;
     }
 
     @Override

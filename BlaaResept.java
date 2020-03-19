@@ -1,7 +1,7 @@
 class BlaaResept extends Resept{
     //Rabatt: 75%
-    public BlaaResept(Legemiddel refLegemiddel, Lege refLege, int pasientId, int reit){
-        super(refLegemiddel, refLege, pasientId, reit);
+    public BlaaResept(Legemiddel refLegemiddel, Lege refLege, Pasient pasient, int reit){
+        super(refLegemiddel, refLege, pasient, reit);
     }
 
     @Override

@@ -1,3 +1,5 @@
+import java.util.Iterator;
+
 class Lenkeliste<T> implements Liste<T>{
     protected Node start;
     protected Node siste;
@@ -122,6 +124,29 @@ class Lenkeliste<T> implements Liste<T>{
 
     }
 
+    public Iterator<T> iterator(){
+        return new LenkelisteIterator();
+    }
+
+    class LenkelisteIterator implements Iterator<T>{
+        private Node neste;
+
+        public LenkelisteIterator(){
+            neste = start;
+        }
+
+        @Override
+        public boolean hasNext(){
+            return (neste != null);
+        }
+
+        @Override
+        public T next(){
+            T retur = neste.hentData();
+            neste = neste.hentNeste();
+            return retur;
+        }
+    }
 
 
     class Node  {

@@ -1,26 +1,26 @@
 abstract class Resept{
-    protected static int reseptTeller = 0; //Gir unik ID til resepter
+    protected static int reseptIdTeller = 0; //Gir unik ID til resepter
 
     Legemiddel refLegemiddel;
     Lege refLege;
-    int pasientId;
+    Pasient pasient;
     int reit;
-    int id;
+    int unikReseptId;
 
-    public Resept(Legemiddel refLegemiddel, Lege refLege, int pasientId, int reit){
+    public Resept(Legemiddel refLegemiddel, Lege refLege, Pasient pasient, int reit){
         this.refLegemiddel = refLegemiddel;
         this.refLege = refLege;
-        this.pasientId = pasientId;
-        this. reit = reit;
+        this.pasient = pasient;
+        this.reit = reit;
 
-        id = reseptTeller;
-        reseptTeller++;
+        this.unikReseptId = reseptIdTeller;
+        reseptIdTeller++;
     }
 
     @Override
     public String toString(){
         String penStreng = " - Utskrift av resept - \n";
-        penStreng += "Utskrevet til pasientID: " + pasientId + "\n";
+        penStreng += "Utskrevet til pasient: " + pasient + "\n"; //pasientObjektet eller ID?? Sjekk senere
         penStreng += "Utskrevet av: " + refLege + "\n";
         penStreng += "Reit: " + reit + "\n";
         penStreng += "ReseptID: " + id + "\n";
@@ -40,7 +40,7 @@ abstract class Resept{
     }
 
     public int hentPasientId(){
-        return pasientId;
+        return pasient.hentId();
     }
 
     public int hentReit(){
