@@ -1,0 +1,163 @@
+Del B: Klassen Pasient
+
+  # # # Eirik # # #
+  
+B1: Skriv klassen Pasient.
+En Pasient er en typisk bruker av resepter. Pasienten har et navn og et
+fødselsnummer-tekststreng. Når en ny pasient registreres skal denne i tillegg få en unik ID.
+Pasienter har også en liste over reseptene de har fått utskrevet. Siden pasienten ofte vil
+bruke en resept kort tid etter at den er utskrevet, bruker vi en Stabel<Resept> til å lagre
+pasientens resepter. Det skal både være mulig å legge til nye resepter og hente ut hele
+reseptlisten.
+
+
+  # # # ANDREAS # # # // Jeg tror denne er ferdig, men er noen av stedene jeg ikke vet enda om det burde endres til pasientpeker
+B2: Endre klassene som tar inn en int pasientid til å ta inn en Pasient pasient.
+
+
+  # # # Erik # # #
+Del C: Itererbare lister
+For å enkelt kunne løpe gjennom listene våre skal vi sørge for at de er itererbare. Dette skal
+gjøres “fra toppen” ved å modifisere grensesnittet fra Liste<T> slik at det utvider
+java-grensesnittet Iterable<T>. Det er her viktig å skille mellom grensesnittene Iterable og
+Iterator.
+Iterable er et grensesnitt i Java som brukes av listene våre for å gjøre dem itererbare.
+Denne implementasjonen gjør blant annet at vi får lov til å skrive en for each-løkke som
+løper gjennom listen vår. Grensesnittet ser slik ut:
+interface Iterable<T> {
+Iterator<T> iterator();
+}
+
+Iterator er et annet grensesnitt som beskriver selve iterator-objektet vi bruker for å gå
+gjennom listen. Siden alle lister ikke er like trengs det en egen Iterator-klasse som
+implementerer Iterator<T>, spesialtilpasset våre lister. Dette grensesnittet ser slik ut:
+interface Iterator<T> {
+boolean hasNext();
+T next();
+void remove();
+Side 2 av 7
+}
+
+En fordel med implementasjonen av dette er at vi får tilgang til å bruke for-each-notasjon:
+for (E e : elementliste) {
+//Gjoer noe med e ...
+}
+
+… som egentlig er kortform for “så lenge iteratoren finner et et neste element i listen
+(hasNext() returnerer true), hent det ut (next()).”
+
+C1: Sørg for at grensesnittet Liste<T> utvider Iterable<T>.
+
+C2: Skriv klassen LenkelisteIterator (hint: Denne trenger ikke eget typeparameter) som
+implementerer Iterator<T> og dermed metodene boolean hasNext og T next. Metoden void
+remove() er frivillig og trenger ikke å implementeres.
+Hint: Hvis Node-klassen er en indre klasse i Lenkeliste<T> bør iterator-klassen også være
+det!
+
+C3: Utvid klassen Lenkeliste<T> med metoden Iterator iterator, som returnerer et nytt
+LenkelisteIterator-objekt.
+Relevante Trix-oppgaver: 7.04 & 7.06
+
+
+  # # # Andreas # # #
+Del D: Klassen Lege
+Senere i oppgaven ønsker vi å kunne sortere leger.
+
+D1: Utvid klassen Lege slik at den implementerer grensesnittet Comparable<Lege> og
+dermed også metoden compareTo. Leger skal kunne sorteres alfabetisk etter navn, slik at
+en lege ved navn “Dr. Paus” kommer før (altså er mindre enn) “Dr. Ueland”.
+
+D2: Klassen Lege skal også kunne holde styr på hvilke resepter den har skrevet. Utvid
+klassen med en instans Lenkeliste<Resept> utskrevedeResepter og funksjonalitet for å
+hente ut denne listen av resepter.
+
+D3: Lege skal ha metoder for å opprette instanser av de fire Reseptklassene man kan lage
+instanser av (Hvit resept, p-resept, millitærresept og blå resept). Når et reseptobjekt
+opprettes, skal det legges inn i listen over legens utskrevene resepter, før de returneres.
+Metodesignaturene skal se slik ut:
+
+public HvitResept skrivHvitResept(Legemiddel legemiddel, Pasient pasient, int reit) throws
+UlovligUtskrift;
+
+Side 3 av 7
+
+public MillitaerResept skrivMillitaerResept(Legemiddel legemiddel, Pasient pasient, int
+reit) throws UlovligUtskrift;
+
+public PResept skrivPResept(Legemiddel legemiddel, Pasient pasient) throws UlovligUtskrift;
+
+public BlaaResept skrivBlaaResept(Legemiddel legemiddel, Pasient pasient, int reit) throws
+UlovligUtskrift;
+
+Om en vanlig lege prøver å skrive ut et narkotisk legemiddel kastes unntaket UlovligUtskrift:
+public class UlovligUtskrift extends Exception{
+UlovligUtskrift(Lege l, Legemiddel lm){
+super(“Legen “+l.hentNavn()+ “ har ikke lov til å skrive ut ”+ lm.hentNavn());
+}
+}
+
+(denne klassen må også legges til i besvarelsen din)
+
+Spesialister kan alltid skrive ut Narkotiske legemidler
+Hint: Du kan sjekke om et legemiddel er Narkotisk ved å bruke instanceof operatoren.
+Relevante Trix-oppgaver: 7.01 & 9.01.
+
+
+
+Del E: Legesystem
+Du skal nå programmere selve legesystemet vårt. Programmet skal holde styr på flere lister
+med informasjon om legemidler, resepter, leger og pasienter. Det betyr at dere må tenke
+gjennom hva som skjer når nye objekter som er avhengige av andre objekter legges til.
+Legesystemet skal benytte seg av listene dere skrev i oblig 3. Du velger selv struktur for
+legesystemet, så lenge det oppfyller kravene i deloppgavene. Der objektene kan
+identifiseres både med unik ID og navn (for eksempel når vi skal finne et legemiddel for å
+opprette en resept) velger dere selv hva som er mest hensiktsmessig.
+E1: Skriv en metode for å lese inn objekter fra fil. Følg filformatet i vedlegg 2. Bruk
+skrivResept-metodene i legeobjektet for å opprette Resept objekter. Dersom et objekt er
+ugyldig, skal det ikke legges inn i systemet.
+Hint: Husk å behandle unntak som kan kastes.
+Filformatet er gitt av vedlegg 2.
+Merk: For at filformatet skal stemme er det viktig at tellerne dine for unike ID-er starter på 0.
+E2: Sørg for at brukeren får presentert en kommandoløkke som kjører frem til brukeren selv
+velger å avslutte programmet. Kommandoløkken skal presentere følgende valgmuligheter:
+Skrive ut en fullstendig oversikt over pasienter, leger, legemidler og resepter
+Side 4 av 7
+(deloppgave E3).
+Opprette og legge til nye elementer i systemet (deloppgave E4).
+Bruke en gitt resept fra listen til en pasient (deloppgave E5).
+Skrive ut forskjellige former for statistikk (deloppgave E6).
+Skrive alle data til fil (deloppgave E8).
+E3: Implementer funksjonalitet for å skrive ut en ryddig oversikt om alle elementer i
+legesystemet. Leger skal skrives ut i ordnet rekkefølge.
+E4: Legg til funksjonalitet for å la bruker legge til en lege, pasient, resept eller legemiddel.
+Resepter skal opprettes via Lege sin skrivResept(). Pass på at dere sjekker om det er mulig
+å lage det ønskede objektet før det opprettes - for eksempel skal det ikke være tillatt å lage
+en resept uten en gyldig utskrivende lege. Dersom brukeren oppgir ugyldig informasjon skal
+de informeres om dette.
+Hint: For å finne ut om oppgitt data er gyldig bør vi ta i bruk iteratoren vi har laget og lete
+etter dem i de relevante listene!
+Du bør også gjøre fornuftige typesjekker underveis - for eksempel bør programmet gi en
+feilmelding og gå tilbake til hovedmenyen dersom en bruker forsøker å oppgi noe annet enn
+et tall som mengde virkestoff - men dette er ikke et krav. Hint: Fang opp
+NumberFormatException ved behov!
+E5: Legg til mulighet for å bruke en resept. Illustrasjon av foreslått interaksjon med bruker
+(fra bruker har indikert at de ønsker å bruke en resept) finner dere nederst i oppgaven
+(vedlegg 1).
+E6: Opprett funksjonalitet for å vise statistikk om elementene i systemet. Dette kan for
+eksempel presenteres som en “undermeny” av brukermenyen. Brukeren skal kunne se
+følgende statistiske informasjon:
+Totalt antall utskrevne resepter på vanedannende legemidler
+Totalt antall utskrevne resepter på narkotiske legemidler
+Statistikk om mulig misbruk av narkotika skal vises på følgende måte:
+List opp navnene på alle leger (i alfabetisk rekkefølge) som har skrevet ut
+minst en resept på narkotiske legemidler, og antallet slike resepter per lege.
+List opp navnene på alle pasienter som har minst en gyldig resept på
+narkotiske legemidler, og for disse, skriv ut antallet per pasient.
+E7: Legg til funksjonalitet til å velge hvilken type resept som blir laget under
+kommandoløkken
+Side 5 av 7
+E8: Gi brukeren mulighet til å skrive alle elementer i det nåværende systemet til fil. Filen skal
+formateres på samme måte som innfil-eksempelet fra forrige deloppgave. Du trenger ikke å
+lagre elementene sortert på ID, men merk at dersom dere velger å gjøre det kan dere lese
+fra samme fil som dere skriver til.
+Relevante Trix-oppgaver: 9.01.
