@@ -146,6 +146,10 @@ class Lenkeliste<T> implements Liste<T>{
             neste = neste.hentNeste();
             return retur;
         }
+
+        @Override
+        public void remove(){
+        }
     }
 
 

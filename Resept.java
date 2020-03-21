@@ -23,12 +23,12 @@ abstract class Resept{
         penStreng += "Utskrevet til pasient: " + pasient + "\n"; //pasientObjektet eller ID?? Sjekk senere
         penStreng += "Utskrevet av: " + refLege + "\n";
         penStreng += "Reit: " + reit + "\n";
-        penStreng += "ReseptID: " + id + "\n";
+        penStreng += "ReseptID: " + unikReseptId + "\n";
         return penStreng;
     }
 
     public int hentId(){
-        return id;
+        return unikReseptId;
     }
 
     public Legemiddel hentLegemiddel(){

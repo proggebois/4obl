@@ -16,7 +16,11 @@ class Pasient{
     }
 
     public int hentId(){
-        return id;
+        return unikPasientId;
+    }
+
+    public void nyResept(Resept resept){
+        resepter.leggTil(resept);
     }
 
 

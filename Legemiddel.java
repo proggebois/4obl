@@ -18,14 +18,14 @@ abstract class Legemiddel{
     @Override
     public String toString(){
         String penStreng = "Navn: " + navn + "\n";
-        penStreng += "ID: " + id + "\n";
+        penStreng += "ID: " + unikLegemiddelId + "\n";
         penStreng += "Pris: " + pris + "\n";
         penStreng += "Virkestoff: " + virkestoff + "\n";
         return penStreng;
     }
 
     protected int hentId(){
-        return id;
+        return unikLegemiddelId;
     }
 
     protected String hentNavn(){
