@@ -15,6 +15,7 @@ class Lege implements Comparable<Lege>{
     @Override
     public String toString(){
         String penStreng = navn + "\n";
+        penStreng += "ID: " + unikLegeId + "\n";
         return penStreng;
     }
 

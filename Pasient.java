@@ -23,5 +23,12 @@ class Pasient{
         resepter.leggTil(resept);
     }
 
+    @Override
+    public String toString(){
+        String penStreng = "PasientID: " + unikPasientId + "\n";
+        penStreng += "Navn: " + navn + ", fnr: " + fnr + "\n";
+        return penStreng;
+    }
+
 
 }

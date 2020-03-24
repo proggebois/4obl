@@ -15,6 +15,145 @@ class Legesystem{
         lesFrafil(filnavn);
     }
 
+    public void kjor(){
+
+        String menyVelger = "0";
+        while (!(menyVelger.compareTo("5") == 0)){
+            skrivHovedmeny();
+            Scanner input = new Scanner (System.in);
+            menyVelger = input.nextLine();
+
+            if (menyVelger.compareTo("0") == 0){
+                System.out.println(this);
+            }
+
+            else if (menyVelger.compareTo("1") == 0){
+                opprettNy();
+            }
+/*
+            else if (menyVelger.compareTo("2") == 0){
+                brukResept();
+            }
+
+            else if (menyVelger.compareTo("3") == 0){
+                skrivStatistikk();
+            }
+
+            else if (menyVelger.compareTo("4") == 0){
+                skrivTilFil();
+            }
+*/
+        }
+
+    }
+
+
+
+    public void skrivHovedmeny(){
+        String hovedMeny = " - Legesystem hovedmeny - \n";
+        hovedMeny += "0 - Skriv ut oversikt over pasienter, leger, legemidler og resepter. \n";
+        hovedMeny += "1 - Opprette og legge til nye elementer i systemet.\n";
+        hovedMeny += "2 - Bruk en gitt resept fra listen til en pasient.\n";
+        hovedMeny += "3 - Skriv ut forskjellige former for statistikk.\n";
+        hovedMeny += "4 - Skriv alle data til fil.\n";
+        hovedMeny += "5 - Tast 5 for å avslutte.\n";
+        System.out.println(hovedMeny);
+    }
+
+    public void opprettNy(){
+        System.out.println("Opprett nytt element");
+        String alternativer = "0 - Tast 0 for å opprette ny lege\n";
+        alternativer += "1 - Tast 1 for å opprette ny pasient\n";
+        alternativer += "2 - Tast 2 for å opprette ny resept\n";
+        alternativer += "3 - Tast 3 for å opprette nytt legemiddel\n";
+        System.out.println(alternativer);
+        Scanner opprettNyVelger = new Scanner(System.in);
+        String velger = opprettNyVelger.nextLine();
+
+        if (velger.compareTo("0") == 0){
+            System.out.println("Tast inn info på ny Lege\n");
+            System.out.println("Format: 'navn,kontrollID' , kontrollID = 0 hvis vanlig lege\n");
+            String legeInfo = opprettNyVelger.nextLine();//vet ikke om jeg trenger ny scanner her
+            String[] legeBiter = legeInfo.split(",");
+
+            try {
+                this.nyLege(legeBiter[0],legeBiter[1]);
+            } catch(ArrayIndexOutOfBoundsException e) {
+                System.out.println("Riktig format for lege er 'navn,kontrollID'.");
+            } catch(NumberFormatException e){
+                System.out.println("KontrollIDen kunne ikke parces til int.");
+            }
+        }
+
+        if (velger.compareTo("1") == 0){
+            System.out.println("Tast inn info på ny pasient\n");
+            System.out.println("Format: 'navn,fnr'.\n");
+            String pasientInfo = opprettNyVelger.nextLine();//trenger kanskje ny scanner
+            String[] pasientBiter = pasientInfo.split(",");
+
+            try {
+                this.nyPasient(pasientBiter[0],pasientBiter[1]);
+            } catch(ArrayIndexOutOfBoundsException e) {
+                System.out.println("Riktig format for pasient er 'navn,fnr'.");
+            }
+        }
+
+        if (velger.compareTo("2") == 0){
+            System.out.println("Tast inn info på ny resept\n");
+            System.out.println("Format: 'legemiddelNummer,legeNavn,pasientID,type,[reit]'.\n");
+            String reseptInfo = opprettNyVelger.nextLine();//trenger kanskje ny Scanner
+            String[] reseptBiter = reseptInfo.split(",");
+            if (reseptBiter.length == 5){
+                nyResept(reseptBiter[3], reseptBiter[0], reseptBiter[1], reseptBiter[2], reseptBiter[4]);
+            }
+            else if (reseptBiter.length == 4){
+                nyResept(reseptBiter[0], reseptBiter[1], reseptBiter[2]);
+            }
+            else {
+                System.out.println("Feil format.\n Riktig format er: 'legemiddelNummer,legeNavn,pasientID,type,[reit]'.");
+            }
+        }
+    }
+
+    public void brukResept(){
+    }
+
+    public void skrivStatistikk(){
+    }
+
+    public void skrivTilFil(){
+    }
+
+    public String toString(){
+        String penStreng = "All data: Pasienter - Legemidler - Leger - Resepter\n";
+        penStreng += "Pasienter:\n";
+
+        for (Pasient p : pasienter){
+            penStreng += p + "\n";
+        }
+
+        penStreng += "\nLegemidler:\n";
+        for (Legemiddel legemiddel : legemidler){
+            penStreng += legemiddel + "\n";
+        }
+
+        penStreng += "\nLeger:\n";
+        SortertLenkeliste<Lege> sorterteLeger = new SortertLenkeliste<Lege>();
+        for (Lege lege : leger){
+            sorterteLeger.leggTil(lege);
+        }
+        for (Lege lege : sorterteLeger){
+            penStreng += lege + "\n";
+        }
+
+        penStreng += "\nResepter:\n";
+        for (Resept resept : resepter){
+            penStreng += resept;
+        }
+        return penStreng;
+    }
+
+
     //Apner fil, lager nye objekter og legger de i sine respektive lister v/ bruk av 4 while-lokker
     public void lesFrafil(String filnavn){
         Scanner fil = null;//denne er viktig, uten den har vi ikke fil-variabelen etter try/catch
@@ -38,13 +177,13 @@ class Legesystem{
         linje = fil.nextLine();//Legger forste legemiddel i linje
         while(linje.charAt(0) != '#'){
             String[] biter = linje.split(",");
-            if (biter[1] == "narkotisk"){
+            if (biter[1].compareTo("narkotisk") == 0){
                 nyNarkotisk(biter[0], biter[2], biter[3], biter[4]);
             }
-            if (biter[1] == "vanedannende"){
+            if (biter[1].compareTo("vanedannende") == 0){
                 nyVanedannende(biter[0], biter[2], biter[3], biter[4]);
             }
-            if (biter[1] == "vanlig"){
+            if (biter[1].compareTo("vanlig") == 0){
                 nyVanlig(biter[0], biter[2], biter[3]);
             }
             linje = fil.nextLine();
@@ -54,65 +193,25 @@ class Legesystem{
         linje = fil.nextLine(); //forste lege i linje
         while(linje.charAt(0) != '#'){
             String[] biter = linje.split(",");
-            nyLege(biter[0], biter[1]);
+            String navn = biter[0];
+            String knr = biter[1];
+            nyLege(navn, knr);
             linje = fil.nextLine();
         }
 
         //Reseptlokke:
-        linje = fil.nextLine();
         while(fil.hasNext()){
-            Resept ny = null;
-            String[] biter = linje.split(",");
-            String type = biter[3];
-            String legeNavn = biter[1];
-            int legemiddelNummer = Integer.parseInt(biter[0]);
-            int pasientID = Integer.parseInt(biter[2]);
-            Lege utskrivendeLege = null;
-            for (Lege l : leger){
-                if (l.hentNavn() == legeNavn){
-                    utskrivendeLege = l;
-                }
-            }
-
-            if (type == "hvit"){
-                int reit = Integer.parseInt(biter[4]);
-                try {
-                    ny = utskrivendeLege.skrivHvitResept(legemidler.hent(legemiddelNummer), pasienter.hent(pasientID), reit);
-                } catch(Exception e) {
-                    System.out.println(e);
-                }
-
-            }
-
-            if (type == "blaa"){
-                int reit = Integer.parseInt(biter[4]);
-                try {
-                ny = utskrivendeLege.skrivBlaaResept(legemidler.hent(legemiddelNummer), pasienter.hent(pasientID), reit);
-                } catch(Exception e) {
-                    System.out.println(e);
-                }
-            }
-
-            if (type == "millitaer"){
-                int reit = Integer.parseInt(biter[4]);
-                try {
-                    ny = utskrivendeLege.skrivMilitaerResept(legemidler.hent(legemiddelNummer), pasienter.hent(pasientID), reit);
-                } catch(Exception e) {
-                    System.out.println(e);
-                }
-            }
-
-            if (type == "p"){
-                try {
-                    ny = utskrivendeLege.skrivPResept(legemidler.hent(legemiddelNummer), pasienter.hent(pasientID));
-                } catch(Exception e) {
-                    System.out.println(e);
-                }
-            }
-
-            resepter.leggTil(ny);
-            pasienter.hent(pasientID).nyResept(ny);
             linje = fil.nextLine();
+            String[] reseptBiter = linje.split(",");
+            for (String s : reseptBiter){
+                System.out.println(s);
+            }
+            if (reseptBiter.length == 5){
+                nyResept(reseptBiter[3], reseptBiter[0], reseptBiter[1], reseptBiter[2], reseptBiter[4]);
+            }
+            if (reseptBiter.length == 4){
+                nyResept(reseptBiter[0], reseptBiter[1], reseptBiter[2]);
+            }
         }
     }
 
@@ -125,12 +224,13 @@ class Legesystem{
     }
 
     public void nyLege(String navn, String knr){
-        if (knr == "0"){
+        int kontrollID = Integer.parseInt(knr);
+        if (kontrollID == 0){
             Lege ny = new Lege(navn);
             leger.leggTil(ny);
         }
         else {
-            Lege ny = new Spesialist(navn, Integer.parseInt(knr));
+            Lege ny = new Spesialist(navn, kontrollID);
             leger.leggTil(ny);
         }
     }
@@ -150,9 +250,78 @@ class Legesystem{
         legemidler.leggTil(ny);
     }
 
+    public void nyResept(String legemiddelNummer, String legeNavn, String pasientID){
+        Resept ny = null;
+        int nyLegemiddelNummer = 0;
+        int nyPasientID = 0;
+        try {
+            nyLegemiddelNummer = Integer.parseInt(legemiddelNummer);
+            nyPasientID = Integer.parseInt(pasientID);
+        } catch(NumberFormatException e) {
+            System.out.println("Feil i format, NumberFormatException.");
+        }
+        Lege utskrivendeLege = null;
+        for (Lege lege : leger){
+            if (lege.hentNavn().compareTo(legeNavn) == 0){
+                utskrivendeLege = lege;
+            }
+        }
+        try {
+            ny = utskrivendeLege.skrivPResept(legemidler.hent(nyLegemiddelNummer), pasienter.hent(nyPasientID));
+        } catch(Exception e) {
+            System.out.println(e);
+        }
+        resepter.leggTil(ny);
+        pasienter.hent(nyPasientID).nyResept(ny);
+    }
 
+    public void nyResept(String type, String legemiddelNummer, String legeNavn, String pasientID, String reit){
+        Resept ny = null;
+        int nyLegemiddelNummer = 0;
+        int nyPasientID = 0;
+        int nyReit = 0;
+        try {
+            nyLegemiddelNummer = Integer.parseInt(legemiddelNummer);
+            nyPasientID = Integer.parseInt(pasientID);
+            nyReit = Integer.parseInt(reit);
+        } catch(NumberFormatException e) {
+            System.out.println("Feil i format, NumberFormatException.");
+        }
+        Lege utskrivendeLege = null;
+        for (Lege lege : leger){
+            if (lege.hentNavn().compareTo(legeNavn) == 0){
+                utskrivendeLege = lege;
+            }
+        }
 
+        if (type.compareTo("hvit") == 0){
+            try {
+                ny = utskrivendeLege.skrivHvitResept(legemidler.hent(nyLegemiddelNummer), pasienter.hent(nyPasientID), nyReit);
+            } catch(Exception e) {
+                System.out.println(e);
+            }
 
+        }
+
+        if (type.compareTo("blaa") == 0){
+            try {
+                ny = utskrivendeLege.skrivBlaaResept(legemidler.hent(nyLegemiddelNummer), pasienter.hent(nyPasientID), nyReit);
+            } catch(Exception e) {
+                System.out.println(e);
+            }
+        }
+
+        if (type.compareTo("millitaer") == 0){
+            try {
+                ny = utskrivendeLege.skrivMilitaerResept(legemidler.hent(nyLegemiddelNummer), pasienter.hent(nyPasientID), nyReit);
+            } catch(Exception e) {
+                System.out.println(e);
+            }
+        }
+
+        resepter.leggTil(ny);
+        pasienter.hent(nyPasientID).nyResept(ny);
+    }
 
 
 }

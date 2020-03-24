@@ -19,9 +19,10 @@ abstract class Resept{
 
     @Override
     public String toString(){
-        String penStreng = " - Utskrift av resept - \n";
-        penStreng += "Utskrevet til pasient: " + pasient + "\n"; //pasientObjektet eller ID?? Sjekk senere
+        String penStreng = "\n - Utskrift av resept - \n";
+        penStreng += "Utskrevet til pasient: " + pasient; //pasientObjektet eller ID?? Sjekk senere
         penStreng += "Utskrevet av: " + refLege + "\n";
+        penStreng += "Legemiddel: " + refLegemiddel;
         penStreng += "Reit: " + reit + "\n";
         penStreng += "ReseptID: " + unikReseptId + "\n";
         return penStreng;
