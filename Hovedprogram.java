@@ -16,7 +16,7 @@ class Hovedprogram{
         System.out.println("Tast inn filnavn for innlesing av data: \n");
         Scanner inputFil = new Scanner(System.in);
         Legesystem system = new Legesystem(inputFil.nextLine());
-        System.out.println(system);
+        //System.out.println(system);
 
         system.kjor();
 

@@ -1,5 +1,8 @@
 import java.util.Scanner;
 import java.io.File;
+import java.io.IOException;
+import java.io.FileWriter;
+
 class Legesystem{
 
     Lenkeliste<Pasient> pasienter;
@@ -34,20 +37,51 @@ class Legesystem{
             else if (menyVelger.compareTo("2") == 0){
                 brukResept();
             }
-/*
+
             else if (menyVelger.compareTo("3") == 0){
                 skrivStatistikk();
             }
-
+/*
             else if (menyVelger.compareTo("4") == 0){
-                skrivTilFil();
+                skrivTilFilMeny();
             }
 */
         }
 
     }
 
+    public void skrivTilFilMeny(){
+        Scanner scannerSkrivTilFil = new Scanner(System.in);
 
+        System.out.println("\n\n - Meny for aa skrive til fil - \n\n");
+        System.out.println("Denne funksjonen skriver all data til en txt fil.")
+        System.out.println("Tast 'ja' for aa fortsett: ")
+
+        String filnavn = scannerSkrivTilFil.nextLine();
+
+        if (filnavn.toLowerCase().compareTo("ja") == 0){
+            System.out.println("Tast inn onsket filnavn, format 'filnavn.txt' \n");
+            filnavn = scannerSkrivTilFil.nextLine();
+            skrivTilFil(filnavn);
+        }
+    }
+
+    public void skrivTilFil(String filnavn){
+        File nyFil = null;
+        try {
+            nyFil = new File(filnavn);
+            if (nyFil.createNewFile()){
+                System.out.println("\nOpprettet en ny fil, filnavn: " + filnavn + "\n");
+            }
+            else {
+                System.out.println("Filen finnes fra foer.");
+            }
+        } catch(IOException e) {
+            System.out.println("Det skjedde en feil.");
+        }
+
+        //Gjoere ting med fil.
+    }
 
     public void skrivHovedmeny(){
         String hovedMeny = " - Legesystem hovedmeny - \n";
@@ -141,16 +175,21 @@ class Legesystem{
         boolean godkjent = false;
         int index = 0;
         String valg = "hei";
+        Pasient gjeldende = null;
+
         while (godkjent == false){
             valg = reseptMenyVelger.nextLine();
             try {
                 index = Integer.parseInt(valg);
-                godkjent = true;
+                gjeldende = pasienter.hent(index);
+                godkjent = true;//Denne linjen kjører ikke hvis vi faar exception!
             } catch(NumberFormatException e) {
                 System.out.println("Du skulle taste inn tallet bruh");
+            } catch (UgyldigListeIndeks e){
+                System.out.println("Ugyldig index...");
             }
         }
-        Pasient gjeldende = pasienter.hent(index);
+
         if (gjeldende.hentResepter().stoerrelse() == 0){
             System.out.println("Pasienten har ingen resepter.");
         }
@@ -162,14 +201,23 @@ class Legesystem{
                 System.out.println(""+ teller + ": " + r.hentLegemiddel().hentNavn() + " (" + r.hentReit() + ")\n");
                 teller++;
             }
-            valg = reseptMenyVelger.nextLine();
-            try {
-                index = Integer.parseInt(valg);
-            } catch(NumberFormatException e) {
-                System.out.println("Du skulle taste inn et tall.");
+
+            Resept gjeldendeResept = null;
+            godkjent = false;
+            while (godkjent == false){
+                System.out.println("vedder paa at denne kjorer");
+                valg = reseptMenyVelger.nextLine();
+                try {
+                    index = Integer.parseInt(valg);
+                    gjeldendeResept = gjeldende.hentResepter().hent(index);
+                    godkjent = true;
+                } catch(NumberFormatException e) {
+                    System.out.println("Du skulle taste inn et tall.");
+                } catch(UgyldigListeIndeks e){
+                    System.out.println("Ugyldig index til reseptlisten.");
+                }
             }
-            Resept gjeldendeResept = gjeldende.hentResepter().hent(index);
-            Boolean resultat = gjeldendeResept.bruk();
+            boolean resultat = gjeldendeResept.bruk();
             if (resultat == false){
                 System.out.println("Kunne ikke bruke resept paa " + gjeldendeResept.hentLegemiddel().hentNavn() + " (ingen gjenvaerende reit).");
             }
@@ -180,10 +228,78 @@ class Legesystem{
     }
 
     public void skrivStatistikk(){
+        //Her kommer en undermeny for aa velge type statistikk
+        System.out.println("\n\n - Meny for utskrift av statistikk - ");
+        String alternativer = "0 - Tast 0 for totalt antall utskrevne resepter paa vanedannende legemidler\n";
+        alternativer += "1 - Tast 1 for totalt antall utskrevne resepter paa narkotiske legemidler\n";
+        alternativer += "2 - Tast 2 for antall resepter paa narkotiske legemidler per lege\n";
+        alternativer += "3 - Tast 3 for antall resepter paa narkotiske legemidler per pasient\n";
+        alternativer += "Alt annet sender deg tilbake til hovedmenyen";
+        System.out.println(alternativer);
+        Scanner nyVelger = new Scanner(System.in);
+        String velger = nyVelger.nextLine();
+
+        //Skriver ut totalt antall utskrevne resepter på vanedannende
+        if (velger.compareTo("0") == 0){
+            int vaneTeller = 0;
+            for (Resept r : this.resepter){
+                if (r.hentLegemiddel() instanceof Vanedannende){
+                    vaneTeller++;
+                }
+            }
+            System.out.println("\n\nTotalt antall resepter paa vanedannende legemidler: " + vaneTeller + "\n\n");
+        }
+
+        //Skriver ut totalt antall utskrevne resepter på narkotiske
+        if (velger.compareTo("1") == 0){
+            int narkoTeller = 0;
+            for (Resept r : this.resepter){
+                if (r.hentLegemiddel() instanceof Narkotisk){
+                    narkoTeller++;
+                }
+            }
+            System.out.println("\n\nTotalt antall resepter paa narkotiske legemidler: " + narkoTeller + "\n\n");
+        }
+
+        //Per lege, utskrevne resepter paa narkotisk:
+        if (velger.compareTo("2") == 0){
+            SortertLenkeliste<Lege> sorterteLeger = new SortertLenkeliste<Lege>();
+            for (Lege lege : leger){
+                sorterteLeger.leggTil(lege);
+            }
+            int narkotiskTeller = 0;
+            for (Lege lege : sorterteLeger){
+                narkotiskTeller = 0;
+                for (Resept r : lege.hentUtskrevedeResepter()){
+                    if (r.hentLegemiddel() instanceof Narkotisk){
+                        narkotiskTeller++;
+                    }
+                }
+                if (narkotiskTeller > 0){
+                    System.out.println("\n\nLege: " + lege.hentNavn() + "\nAntall utskrevne: " + narkotiskTeller + "\n\n");
+                }
+            }
+        }
+
+        //Per pasient, utskrevne resepter paa narkotisk
+        if (velger.compareTo("3") == 0){
+            int narkotiskTeller = 0;
+            for (Pasient p : this.pasienter){
+                narkotiskTeller = 0;
+                for (Resept r : p.hentResepter()){
+                    if (r.hentLegemiddel() instanceof Narkotisk){
+                        narkotiskTeller++;
+                    }
+                }
+                if (narkotiskTeller > 0){
+                    System.out.println("\n\nPasient: " + p.hentNavn() + "\nAntall utskrevne: " + narkotiskTeller + "\n\n");
+                }
+            }
+        }
+
+
     }
 
-    public void skrivTilFil(){
-    }
 
     public String toString(){
         String penStreng = "All data: Pasienter - Legemidler - Leger - Resepter\n";
