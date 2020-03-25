@@ -30,11 +30,11 @@ class Legesystem{
             else if (menyVelger.compareTo("1") == 0){
                 opprettNy();
             }
-/*
+
             else if (menyVelger.compareTo("2") == 0){
                 brukResept();
             }
-
+/*
             else if (menyVelger.compareTo("3") == 0){
                 skrivStatistikk();
             }
@@ -113,9 +113,70 @@ class Legesystem{
                 System.out.println("Feil format.\n Riktig format er: 'legemiddelNummer,legeNavn,pasientID,type,[reit]'.");
             }
         }
+
+        if (velger.compareTo("3") == 0){
+            System.out.println("Skriv inn info på nytt legemiddel\n");
+            System.out.println("Format: 'navn,type,pris,virkestoff,[styrke]'.");
+            String legemiddelInfo = opprettNyVelger.nextLine();
+            String[] legemiddelBiter = legemiddelInfo.split(",");
+            if (legemiddelBiter.length == 4){
+                nyLegemiddel(legemiddelBiter[0], legemiddelBiter[2], legemiddelBiter[3]);
+            }
+            else if (legemiddelBiter.length == 5){
+                nyLegemiddel(legemiddelBiter[0], legemiddelBiter[1], legemiddelBiter[2], legemiddelBiter[3], legemiddelBiter[4]);
+            }
+            else {
+                System.out.println("Format ikke godkjent.");
+            }
+        }
     }
 
     public void brukResept(){
+        Scanner reseptMenyVelger = new Scanner(System.in);
+        System.out.println("Hvilken pasient vil du se resepter for?");
+        for (Pasient pasient : pasienter){
+            System.out.println("" + pasient.hentId() + ": " + pasient.hentNavn() + " (" + pasient.hentFnr() + ")\n");
+        }
+
+        boolean godkjent = false;
+        int index = 0;
+        String valg = "hei";
+        while (godkjent == false){
+            valg = reseptMenyVelger.nextLine();
+            try {
+                index = Integer.parseInt(valg);
+                godkjent = true;
+            } catch(NumberFormatException e) {
+                System.out.println("Du skulle taste inn tallet bruh");
+            }
+        }
+        Pasient gjeldende = pasienter.hent(index);
+        if (gjeldende.hentResepter().stoerrelse() == 0){
+            System.out.println("Pasienten har ingen resepter.");
+        }
+        else {
+            System.out.println("Valgt pasient: \n" + gjeldende);
+            System.out.println("Hvilken resept vil du bruke?");
+            int teller = 0;
+            for (Resept r : gjeldende.hentResepter()){
+                System.out.println(""+ teller + ": " + r.hentLegemiddel().hentNavn() + " (" + r.hentReit() + ")\n");
+                teller++;
+            }
+            valg = reseptMenyVelger.nextLine();
+            try {
+                index = Integer.parseInt(valg);
+            } catch(NumberFormatException e) {
+                System.out.println("Du skulle taste inn et tall.");
+            }
+            Resept gjeldendeResept = gjeldende.hentResepter().hent(index);
+            Boolean resultat = gjeldendeResept.bruk();
+            if (resultat == false){
+                System.out.println("Kunne ikke bruke resept paa " + gjeldendeResept.hentLegemiddel().hentNavn() + " (ingen gjenvaerende reit).");
+            }
+            else {
+                System.out.println("Bruk resept paa " + gjeldendeResept.hentLegemiddel().hentNavn() + " var vellykket. Gjenvaerende reit: " + gjeldendeResept.hentReit());
+            }
+        }
     }
 
     public void skrivStatistikk(){
@@ -177,14 +238,11 @@ class Legesystem{
         linje = fil.nextLine();//Legger forste legemiddel i linje
         while(linje.charAt(0) != '#'){
             String[] biter = linje.split(",");
-            if (biter[1].compareTo("narkotisk") == 0){
-                nyNarkotisk(biter[0], biter[2], biter[3], biter[4]);
+            if (biter.length == 4){
+                nyLegemiddel(biter[0], biter[2], biter[3]);
             }
-            if (biter[1].compareTo("vanedannende") == 0){
-                nyVanedannende(biter[0], biter[2], biter[3], biter[4]);
-            }
-            if (biter[1].compareTo("vanlig") == 0){
-                nyVanlig(biter[0], biter[2], biter[3]);
+            else if (biter.length == 5){
+                nyLegemiddel(biter[0], biter[1], biter[2], biter[3], biter[4]);
             }
             linje = fil.nextLine();
         }
@@ -203,9 +261,6 @@ class Legesystem{
         while(fil.hasNext()){
             linje = fil.nextLine();
             String[] reseptBiter = linje.split(",");
-            for (String s : reseptBiter){
-                System.out.println(s);
-            }
             if (reseptBiter.length == 5){
                 nyResept(reseptBiter[3], reseptBiter[0], reseptBiter[1], reseptBiter[2], reseptBiter[4]);
             }
@@ -235,19 +290,23 @@ class Legesystem{
         }
     }
 
-    public void nyVanlig(String navn, String pris, String virkestoff){
+    public void nyLegemiddel(String navn, String pris, String virkestoff){
         Legemiddel ny = new Vanlig(navn, Double.parseDouble(pris), Double.parseDouble(virkestoff));
         legemidler.leggTil(ny);
     }
 
-    public void nyNarkotisk(String navn, String pris, String virkestoff, String styrke){
-        Legemiddel ny = new Narkotisk(navn, Double.parseDouble(pris), Double.parseDouble(virkestoff), Integer.parseInt(styrke));
-        legemidler.leggTil(ny);
-    }
-
-    public void nyVanedannende(String navn, String pris, String virkestoff, String styrke){
-        Legemiddel ny = new Vanedannende(navn, Double.parseDouble(pris), Double.parseDouble(virkestoff), Integer.parseInt(styrke));
-        legemidler.leggTil(ny);
+    public void nyLegemiddel(String navn, String type, String pris, String virkestoff, String styrke){
+        if (type.compareTo("narkotisk") == 0){
+            Legemiddel ny = new Narkotisk(navn, Double.parseDouble(pris), Double.parseDouble(virkestoff), Integer.parseInt(styrke));
+            legemidler.leggTil(ny);
+        }
+        else if (type.compareTo("vanedannende") == 0){
+            Legemiddel ny = new Vanedannende(navn, Double.parseDouble(pris), Double.parseDouble(virkestoff), Integer.parseInt(styrke));
+            legemidler.leggTil(ny);
+        }
+        else {
+            System.out.println("Noe galt med type-variablen.");
+        }
     }
 
     public void nyResept(String legemiddelNummer, String legeNavn, String pasientID){

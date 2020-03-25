@@ -15,6 +15,18 @@ class Pasient{
         this.resepter = new Stabel<Resept>();
     }
 
+    public String hentNavn(){
+        return navn;
+    }
+
+    public Stabel<Resept> hentResepter(){
+        return resepter;
+    }
+
+    public String hentFnr(){
+        return fnr;
+    }
+
     public int hentId(){
         return unikPasientId;
     }
